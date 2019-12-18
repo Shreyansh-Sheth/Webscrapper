@@ -1,11 +1,19 @@
+//url to website
+//in this case steam top seller games
 const siteUrl =
   "https://store.steampowered.com/search/?filter=topsellers&page=";
+
+//specific tag , class ,id  in which your data is
+const dataSetting = ".title";
+
+//limit of page from to
+const pageLengthMin = 1;
+const pageLengthMax = 20;
+
+
 const axios = require("axios");
 const cheerio = require("cheerio");
 const fs = require("fs");
-const dataSetting = ".title";
-const pageLengthMin = 1;
-const pageLengthMax = 20;
 
 async function fetchData(i) {
   const result = await axios.get(siteUrl + "" + i);
@@ -14,7 +22,7 @@ async function fetchData(i) {
 
 async function scrape() {
   let data = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = pageLengthMin; i < pageLengthMax; i++) {
     const DOM = await fetchData(i);
     await console.log(DOM);
     await data.push(...DOM(dataSetting).toArray());
@@ -24,6 +32,7 @@ async function scrape() {
   await saveData(data);
 }
 
+//this will save data as html to another file call data.html
 function saveData(data) {
   let out = "<html><body>";
   data.forEach(element => {
@@ -32,4 +41,6 @@ function saveData(data) {
 
   fs.writeFileSync("data.html", out);
 }
+
+//start chain of function
 scrape();
